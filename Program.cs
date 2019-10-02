@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime;
 
 namespace Trout
 {
@@ -6,7 +7,21 @@ namespace Trout
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            // Improve garbage collector performance at the cost of memory usage.
+            // Engine should not allocate much memory when searching a position since it references pre-allocated objects.
+            GCSettings.LatencyMode = GCLatencyMode.SustainedLowLatency;
+            using (UciStream uciStream = new UciStream())
+            {
+                try
+                {
+                    uciStream.Run();
+                }
+                catch (Exception exception)
+                {
+                    uciStream.HandleException(exception);
+                }
+            }
+
         }
     }
 }
