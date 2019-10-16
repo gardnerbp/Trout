@@ -1,0 +1,8 @@
+D:\Downloads\Chess\Trout\TCache\bin\Debug\netstandard2.0\TCache.deps.json
+D:\Downloads\Chess\Trout\TCache\bin\Debug\netstandard2.0\TCache.dll
+D:\Downloads\Chess\Trout\TCache\obj\Debug\netstandard2.0\TCache.csprojAssemblyReference.cache
+D:\Downloads\Chess\Trout\TCache\obj\Debug\netstandard2.0\TCache.AssemblyInfoInputs.cache
+D:\Downloads\Chess\Trout\TCache\obj\Debug\netstandard2.0\TCache.AssemblyInfo.cs
+D:\Downloads\Chess\Trout\TCache\bin\Debug\netstandard2.0\TCache.pdb
+D:\Downloads\Chess\Trout\TCache\obj\Debug\netstandard2.0\TCache.dll
+D:\Downloads\Chess\Trout\TCache\obj\Debug\netstandard2.0\TCache.pdb
