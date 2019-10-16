@@ -1,6 +1,6 @@
 ﻿namespace Trout
 {
-    internal class Cache
+    public class Position
     {
     }
 }

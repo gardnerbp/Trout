@@ -2,9 +2,11 @@
 
 namespace Trout
 {
-    internal class Search
+    internal class Search : IDisposable
     {
-        internal void Dispose()
+        public const int MaxHorizon = 64;
+
+        public void Dispose()
         {
             throw new NotImplementedException();
         }

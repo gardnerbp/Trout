@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Threading;
+using TCache;
 
 namespace Trout
 {
@@ -34,6 +35,63 @@ namespace Trout
         private object messageLock;
         private bool disposed;
 
+        private bool Log
+        {
+            get => logWriter != null;
+            set
+            {
+                if (value)
+                {
+                    // Start logging.
+                    if (logWriter == null)
+                    {
+                        // Create or append to log file.
+                        // Include GUID in log filename to avoid multiple engine instances interleaving lines in a single log file.
+                        string file = $"Trout-{Guid.NewGuid()}.log";
+                        FileStream fileStream = File.Open(file, FileMode.Append, FileAccess.Write, FileShare.Read);
+                        logWriter = new StreamWriter(fileStream) { AutoFlush = true };
+                    }
+                }
+                else
+                {
+                    // Stop logging.
+                    logWriter?.Close();
+                    logWriter?.Dispose();
+                    _logWriter = null;
+                }
+            }
+        }
+
+        public UciStream()
+        {
+            // Create diagnostic and synchronization objects.
+            stopwatch = Stopwatch.StartNew();
+            commandStopwatch = new Stopwatch();
+            asyncQueue = new Queue<List<string>>();
+            asyncSignal = new AutoResetEvent(false);
+            asyncLock = new object();
+            messageLock = new object();
+            
+            // Create game objects.
+            // Cannot use object initializer because it changes order of object construction
+            // (to PreCalculatedMoves first, Board second, which causes null reference in PrecalculatedMove.FindMagicMultipliers).
+            Board = new Board(WriteMessageLine);
+            Board.PrecalculatedMoves = new PrecalculatedMoves(Board.BishopMoveMasks, Board.RookMoveMasks, Board.CreateMoveDestinationsMask, WriteMessageLine);
+            cache = new Cache(cacheSizeMegabytes * Cache.CapacityPerMegabyte, Board.ValidateMove);
+            killerMoves = new KillerMoves(Search.MaxHorizon);
+            moveHistory = new MoveHistory();
+            evaluation = new Evaluation(Board.GetPositionCount, Board.IsPassedPawn, Board.IsFreePawn, () => debug, WriteMessageLine);
+            search = new Search(cache, killerMoves, moveHistory, evaluation, () => debug, WriteMessageLine);
+            defaultHalfAndFullMove = new[] { "0", "1" };
+            Board.SetPosition(Board.StartPositionFen);
+        }
+
+        ~UciStream()
+        {
+            Dispose(false);
+        }
+
+
         internal void Run()
         {
             throw new NotImplementedException();
@@ -46,6 +104,7 @@ namespace Trout
 
         #region IDisposable Support
         private bool disposedValue = false; // To detect redundant calls
+        private object _logWriter;
 
         protected virtual void Dispose(bool disposing)
         {
